@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const connectDB = require('./src/config/database');
-const initializeUsers = require("./src/config/initUsers");
 const websocketService = require('./src/services/websocketService');
 const { initializeKafka } = require('./src/services/kafkaService');
 const { 
@@ -40,7 +39,6 @@ async function startServer() {
         
         server.listen(port, () => {
             console.log(`Server running on port ${port}`);
-            initializeUsers();
             initializeFlightCreationService();
             initializeFlightUpdationService();
         });
