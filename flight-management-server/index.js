@@ -9,7 +9,7 @@ const { initializeKafka } = require('./src/services/kafkaService');
 const { 
     initializeFlightCreationService, 
     initializeFlightUpdationService 
-} = require('./src/services/flightService');
+} = require('./src/services/flightSchedulerService');
 
 const app = express();
 const server = http.createServer(app);
@@ -39,9 +39,9 @@ async function startServer() {
         await initializeKafka();
         
         server.listen(port, () => {
-            console.log(`Server running on port ${port} in ${process.env.NODE_ENV} mode`);
-            // initializeUsers();
-            // initializeFlightCreationService();
+            console.log(`Server running on port ${port}`);
+            initializeUsers();
+            initializeFlightCreationService();
             initializeFlightUpdationService();
         });
     } catch (err) {
