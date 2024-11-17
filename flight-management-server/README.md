@@ -61,18 +61,3 @@ Kafka --> |Produce| KafkaBroker[Kafka Broker]
 KafkaBroker --> |Consume| WebSocket[WebSocket Service]
 WebSocket --> |Real-time Updates| Client
 end
-subgraph Data Stores
-MongoDB
-Redis
-KafkaBroker
-end
-subgraph Services Layer
-Services
-WebSocket
-Kafka
-end
-subgraph API Layer
-Routes
-Controllers
-Auth
-end
