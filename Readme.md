@@ -39,7 +39,7 @@ A Node.js backend service for managing flight information with real-time updates
 4. npm run seed
    This will create default users and other required data.
 
-Default Users:
+Default Seeded Users:
 - Admin: username: `admin`, password: `admin123`
 - User: username: `user`, password: `user123`
 
