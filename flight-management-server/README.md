@@ -42,3 +42,37 @@ A Node.js backend service for managing flight information with real-time updates
 Default Users:
 - Admin: username: `admin`, password: `admin123`
 - User: username: `user`, password: `user123`
+
+## Architecture
+```mermaid
+graph TD
+Client[Next.js Client] --> |HTTP/WS| Server[Express Server]
+subgraph Server Architecture
+Server --> |Authentication| Auth[Auth Middleware]
+Auth --> |Cache Check| Redis[(Redis Cache)]
+Auth --> |DB Query| MongoDB[(MongoDB)]
+Server --> |Routes| Routes[Route Handlers]
+Routes --> |Business Logic| Controllers[Controllers]
+Controllers --> |Data Access| Services[Services]
+Services --> Redis
+Services --> MongoDB
+Services --> Kafka[Kafka Service]
+Kafka --> |Produce| KafkaBroker[Kafka Broker]
+KafkaBroker --> |Consume| WebSocket[WebSocket Service]
+WebSocket --> |Real-time Updates| Client
+end
+subgraph Data Stores
+MongoDB
+Redis
+KafkaBroker
+end
+subgraph Services Layer
+Services
+WebSocket
+Kafka
+end
+subgraph API Layer
+Routes
+Controllers
+Auth
+end
