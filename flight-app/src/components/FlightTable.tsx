@@ -30,6 +30,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../../components/ui/pagination"
+import { Button } from '../../components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/dialog"
 
 const STATUS_OPTIONS = [
   { value: "ON_TIME", label: "On Time" },
@@ -59,6 +69,15 @@ interface FlightTableProps {
   canUpdateFlights: boolean;
 }
 
+// Add this interface for the modal state
+interface StatusUpdateModal {
+  isOpen: boolean;
+  flightId: string;
+  flightNumber: string;
+  currentStatus: string;
+  newStatus: string;
+}
+
 export function FlightTable({ canUpdateFlights }: FlightTableProps) {
   const { toast } = useToast()
   const [flights, setFlights] = useState<Flight[]>([])
@@ -69,6 +88,13 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedAirline, setSelectedAirline] = useState('ALL')
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('ALL')
+  const [statusModal, setStatusModal] = useState<StatusUpdateModal>({
+    isOpen: false,
+    flightId: '',
+    flightNumber: '',
+    currentStatus: '',
+    newStatus: ''
+  });
 
   const fetchFlights = async () => {
     try {
@@ -163,6 +189,47 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
 
   const totalPages = Math.ceil(filteredFlights.length / itemsPerPage);
 
+  // Add function to handle edit button click
+  const handleEditClick = (flight: Flight) => {
+    console.log('Edit clicked for flight:', flight);
+    setStatusModal({
+      isOpen: true,
+      flightId: flight._id,
+      flightNumber: flight.flightNumber,
+      currentStatus: flight.status,
+      newStatus: flight.status
+    });
+  };
+
+  // Update status update handler
+  const handleStatusUpdate = async () => {
+    try {
+      await flightService.updateFlightStatus(statusModal.flightId, statusModal.newStatus);
+      await fetchFlights();
+      toast({
+        title: "Status Updated",
+        description: "Flight status has been updated successfully",
+        className: "bg-green-500 text-white border-green-500 dark:bg-green-900 dark:border-green-900",
+      });
+      setStatusModal(prev => ({ ...prev, isOpen: false }));
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: "Failed to update flight status",
+        className: "bg-red-500 text-white border-red-500 dark:bg-red-900 dark:border-red-900",
+      });
+      console.error('Error updating status:', error);
+    }
+  };
+
+  // Add useEffect to monitor state changes
+  useEffect(() => {
+    console.log('Status modal state updated:', statusModal);
+  }, [statusModal]);
+
+  console.log('Rendering with statusModal:', statusModal);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -223,6 +290,9 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
               <TableHead className="text-slate-700 dark:text-slate-300 text-left font-medium">Departure Time</TableHead>
               <TableHead className="text-slate-700 dark:text-slate-300 text-left font-medium">Destination</TableHead>
               <TableHead className="text-slate-700 dark:text-slate-300 text-left font-medium">Status</TableHead>
+              {canUpdateFlights && (
+                <TableHead className="text-slate-700 dark:text-slate-300 text-left font-medium">Actions</TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -237,38 +307,91 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
                 </TableCell>
                 <TableCell className="text-slate-900 dark:text-slate-300 py-4">{flight.destination}</TableCell>
                 <TableCell className="text-slate-900 dark:text-slate-300 py-4">
-                  {canUpdateFlights ? (
-                    <Select
-                      value={selectedStatus[flight._id] || flight.status}
-                      onValueChange={(newStatus) => handleStatusSelect(flight._id, newStatus)}
-                    >
-                      <SelectTrigger className="w-[180px] bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
-                        <SelectValue>
-                          {STATUS_OPTIONS.find(opt => 
-                            opt.value === (selectedStatus[flight._id] || flight.status)
-                          )?.label || "Select status"}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {STATUS_OPTIONS.map((option) => (
-                          <SelectItem 
-                            key={`${flight._id}-${option.value}`} 
-                            value={option.value}
-                          >
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    STATUS_OPTIONS.find(opt => opt.value === flight.status)?.label || flight.status
-                  )}
+                  <div className={`inline-flex px-2 py-1 rounded-full text-sm font-medium
+                    ${flight.status === 'ON_TIME' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ''}
+                    ${flight.status === 'DELAYED' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : ''}
+                    ${flight.status === 'CANCELLED' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : ''}
+                  `}>
+                    {STATUS_OPTIONS.find(opt => opt.value === flight.status)?.label || flight.status}
+                  </div>
                 </TableCell>
+                {canUpdateFlights && (
+                  <TableCell className="text-slate-900 dark:text-slate-300 py-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditClick(flight)}
+                    >
+                      Edit Status
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+
+      {/* Status Update Modal */}
+      <Dialog 
+        open={statusModal.isOpen} 
+        onOpenChange={(open: any) => {
+          console.log('Dialog onOpenChange:', open);
+          setStatusModal(prev => ({
+            ...prev,
+            isOpen: open
+          }));
+        }}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Update Flight Status</DialogTitle>
+            <DialogDescription>
+              Update the status for flight {statusModal.flightNumber}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <Select
+              value={statusModal.newStatus}
+              onValueChange={(value) => {
+                setStatusModal(prev => ({
+                  ...prev,
+                  newStatus: value
+                }));
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select new status" />
+              </SelectTrigger>
+              <SelectContent>
+                {STATUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setStatusModal(prev => ({
+                  ...prev,
+                  isOpen: false
+                }));
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleStatusUpdate}>
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex flex-col items-center space-y-2">
         <Pagination>
