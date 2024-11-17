@@ -109,11 +109,13 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
   }, [searchTerm, selectedAirline, selectedStatusFilter]);
 
   const handleStatusSelect = async (flightId: string, newStatus: string) => {
-    const currentFlight = flights.find(f => f.id === flightId);
+    console.log('Updating flight:', { flightId, newStatus });
+    
+    const currentFlight = flights.find(f => f._id === flightId);
     
     if (currentFlight && currentFlight.status !== newStatus) {
       try {
-        await flightService.updateFlightStatus(flightId, newStatus);
+        await flightService.updateFlightStatus(currentFlight._id, newStatus);
         await fetchFlights();
         toast({
           title: "Status Updated",
@@ -226,7 +228,7 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
           <TableBody>
             {currentFlights.map((flight) => (
               <TableRow 
-                key={flight.id}
+                key={flight._id}
                 className="border-t border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50"
               >
                 <TableCell className="text-slate-900 dark:text-slate-300 py-4">{flight.flightNumber}</TableCell>
@@ -237,20 +239,20 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
                 <TableCell className="text-slate-900 dark:text-slate-300 py-4">
                   {canUpdateFlights ? (
                     <Select
-                      value={selectedStatus[flight.id] || flight.status}
-                      onValueChange={(newStatus) => handleStatusSelect(flight.id, newStatus)}
+                      value={selectedStatus[flight._id] || flight.status}
+                      onValueChange={(newStatus) => handleStatusSelect(flight._id, newStatus)}
                     >
                       <SelectTrigger className="w-[180px] bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
                         <SelectValue>
                           {STATUS_OPTIONS.find(opt => 
-                            opt.value === (selectedStatus[flight.id] || flight.status)
+                            opt.value === (selectedStatus[flight._id] || flight.status)
                           )?.label || "Select status"}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         {STATUS_OPTIONS.map((option) => (
                           <SelectItem 
-                            key={`${flight.id}-${option.value}`} 
+                            key={`${flight._id}-${option.value}`} 
                             value={option.value}
                           >
                             {option.label}

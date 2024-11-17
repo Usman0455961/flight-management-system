@@ -1,7 +1,7 @@
 import axiosInstance from './axiosConfig';
 
 export interface Flight {
-  id: string;
+  _id: string;
   flightNumber: string;
   origin: string;
   destination: string;
@@ -24,6 +24,7 @@ export const flightService = {
   },
 
   async updateFlightStatus(flightId: string, status: string): Promise<Flight> {
+    console.log('Updating flight status:', { flightId, status });
     try {
       const response = await axiosInstance.patch(`/flights/${flightId}/status`, { status });
       return response.data;
