@@ -69,7 +69,6 @@ interface FlightTableProps {
   canUpdateFlights: boolean;
 }
 
-// Add this interface for the modal state
 interface StatusUpdateModal {
   isOpen: boolean;
   flightId: string;
@@ -189,7 +188,6 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
 
   const totalPages = Math.ceil(filteredFlights.length / itemsPerPage);
 
-  // Add function to handle edit button click
   const handleEditClick = (flight: Flight) => {
     console.log('Edit clicked for flight:', flight);
     setStatusModal({
@@ -201,7 +199,6 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
     });
   };
 
-  // Update status update handler
   const handleStatusUpdate = async () => {
     try {
       await flightService.updateFlightStatus(statusModal.flightId, statusModal.newStatus);
@@ -223,7 +220,6 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
     }
   };
 
-  // Add useEffect to monitor state changes
   useEffect(() => {
     console.log('Status modal state updated:', statusModal);
   }, [statusModal]);
@@ -347,7 +343,6 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
         </Table>
       </div>
 
-      {/* Status Update Modal */}
       <Dialog 
         open={statusModal.isOpen} 
         onOpenChange={(open: any) => {
