@@ -12,7 +12,6 @@ const generateFlightNumber = () => {
     return `${airline}${number}`;
 };
 
-// Generate random future date within next 24 hours
 const generateFutureDate = () => {
     const now = new Date();
     const futureDate = new Date(now.getTime() + Math.random() * 24 * 60 * 60 * 1000);
@@ -22,7 +21,7 @@ const generateFutureDate = () => {
 // Create new random flights
 const createRandomFlights = async () => {
     try {
-        const numberOfFlights = Math.floor(Math.random() * 3) + 1; // Create 1-3 flights
+        const numberOfFlights = Math.floor(Math.random() * 3) + 1; 
 
         for (let i = 0; i < numberOfFlights; i++) {
             const origin = airports[Math.floor(Math.random() * airports.length)];
@@ -47,14 +46,12 @@ const createRandomFlights = async () => {
     }
 };
 
-// Update random flights status
 const updateRandomFlightsStatus = async () => {
     try {
         const flights = await Flight.find({ status: { $ne: 'CANCELLED' } });
         
         if (flights.length === 0) return;
 
-        // Update 1-3 random flights
         const numberOfUpdates = Math.min(Math.floor(Math.random() * 3) + 1, flights.length);
         
         for (let i = 0; i < numberOfUpdates; i++) {
@@ -62,7 +59,6 @@ const updateRandomFlightsStatus = async () => {
             const statuses = ['ON_TIME', 'DELAYED', 'CANCELLED'];
             const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
 
-            // Update flight status in database
             await Flight.findByIdAndUpdate(randomFlight._id, { status: newStatus });
             console.log(`Updated flight ${randomFlight.flightNumber} status to ${newStatus}`);
 
@@ -94,12 +90,12 @@ const updateRandomFlightsStatus = async () => {
 };
 
 const initializeFlightCreationService = () => {
-    setInterval(createRandomFlights, 5000); // Every 5 seconds
+    setInterval(createRandomFlights, 5000);
     console.log('Flight creation service initialized - Creating flights every 5 seconds');
 };
 
 const initializeFlightUpdationService = () => {
-    setInterval(updateRandomFlightsStatus, 10000); // Every 10 seconds
+    setInterval(updateRandomFlightsStatus, 10000);
     console.log('Flight update service initialized - Updating flight statuses every 10 seconds');
 };
 
