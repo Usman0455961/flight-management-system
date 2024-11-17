@@ -11,7 +11,6 @@ const seedAll = async () => {
     }
 };
 
-// Run seeder if this file is run directly
 if (require.main === module) {
     seedAll();
 }
