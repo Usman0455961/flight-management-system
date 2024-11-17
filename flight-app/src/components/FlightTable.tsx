@@ -242,7 +242,7 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
             placeholder="Search flights..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full"
+            className="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
           />
         </div>
         <div>
@@ -250,12 +250,18 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
             value={selectedAirline}
             onValueChange={setSelectedAirline}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
               <SelectValue placeholder="Filter by airline" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
               {AIRLINE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem 
+                  key={option.value} 
+                  value={option.value}
+                  className={`cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 ${
+                    option.value === 'ALL' ? 'font-medium text-slate-900 dark:text-slate-100' : ''
+                  }`}
+                >
                   {option.label}
                 </SelectItem>
               ))}
@@ -267,13 +273,22 @@ export function FlightTable({ canUpdateFlights }: FlightTableProps) {
             value={selectedStatusFilter}
             onValueChange={setSelectedStatusFilter}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Statuses</SelectItem>
+            <SelectContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+              <SelectItem 
+                value="ALL"
+                className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 font-medium text-slate-900 dark:text-slate-100"
+              >
+                All Statuses
+              </SelectItem>
               {STATUS_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem 
+                  key={option.value} 
+                  value={option.value}
+                  className="cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
+                >
                   {option.label}
                 </SelectItem>
               ))}
