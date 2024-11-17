@@ -1,0 +1,24 @@
+{
+  "name": "flight-management-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "serve": "nodemon index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.1",
+    "ioredis": "^4.27.7",
+    "jsonwebtoken": "^8.5.1",
+    "kafkajs": "^1.15.0",
+    "mongoose": "^6.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
