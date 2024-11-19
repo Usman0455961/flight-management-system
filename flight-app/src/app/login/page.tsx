@@ -94,7 +94,7 @@ export default function LoginPage() {
               </div>
               <Button 
                 type="submit" 
-                className="w-full h-10 mt-4 text-sm font-semibold bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 dark:from-slate-700 dark:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-500"
+                className="w-full h-10 mt-4 text-sm font-semibold text-white bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 dark:from-slate-700 dark:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-500"
               >
                 Sign In
               </Button>
